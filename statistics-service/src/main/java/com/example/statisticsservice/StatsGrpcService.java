@@ -19,6 +19,7 @@ public class StatsGrpcService extends StatisticsServiceGrpc.StatisticsServiceImp
     @Override
     public void getGeneralStats(GetStatsRequest request, StreamObserver<GetStatsResponse> responseObserver) {
         // Логика как в AnalyticsServiceImpl: создаем ответ, отправляем onNext, закрываем onCompleted
+        // add comment
         GetStatsResponse response = GetStatsResponse.newBuilder()
                 .setTotalCustomers(statsStore.getTotalCustomers())
                 .setLastEventMessage(statsStore.getLastEvent())
