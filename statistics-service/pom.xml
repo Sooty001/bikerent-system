@@ -17,7 +17,6 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<!-- ВЕРСИИ КАК В ЭТАЛОНЕ -->
 		<protobuf.version>3.25.3</protobuf.version>
 		<protobuf-plugin.version>0.6.1</protobuf-plugin.version>
 		<grpc.version>1.66.0</grpc.version>
@@ -32,8 +31,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
-
-		<!-- gRPC ЗАВИСИМОСТИ (КАК В ЭТАЛОНЕ) -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-stub</artifactId>
@@ -44,7 +41,6 @@
 			<artifactId>grpc-protobuf</artifactId>
 			<version>${grpc.version}</version>
 		</dependency>
-		<!-- ЭТО ВАЖНО: NETTY SHADED -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
@@ -59,8 +55,16 @@
 			<artifactId>grpc-server-spring-boot-starter</artifactId>
 			<version>3.1.0.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 
-		<!-- Твоя локальная библиотека -->
 		<dependency>
 			<groupId>com.example</groupId>
 			<artifactId>events-contract</artifactId>
@@ -78,7 +82,6 @@
 			<artifactId>jakarta.annotation-api</artifactId>
 		</dependency>
 
-		<!-- 2. НУЖНО ДЛЯ gRPC ГЕНЕРАЦИИ (Javax) - ВОТ ЭТОГО НЕ ХВАТАЛО -->
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
