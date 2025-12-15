@@ -1,0 +1,158 @@
+version: "3.8"
+
+services:
+  # --- ИНФРАСТРУКТУРА ---
+
+  # 1. База данных
+  postgres:
+    image: postgres:16-alpine
+    container_name: bikerent-db
+    ports:
+      - "5435:5432" # Внешний порт 5435 (чтобы не конфликтовал с твоим локальным Postgres на 5432)
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=bikerent_db
+    volumes:
+      - pg_data:/var/lib/postgresql/data # Сохраняем данные на диск
+    networks:
+      - bikerent-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Брокер сообщений
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: bikerent-rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - bikerent-net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. Трассировка
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: bikerent-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - bikerent-net
+
+  # 4. Метрики
+  prometheus:
+    image: prom/prometheus
+    container_name: bikerent-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - bikerent-net
+
+  # --- МИКРОСЕРВИСЫ ---
+
+  statistics-service:
+    build: ./statistics-service
+    container_name: stats-service
+    ports:
+      - "8083:8083" # Web
+      - "9091:9090" # gRPC
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SERVER_PORT=8083
+      - GRPC_SERVER_PORT=9090
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - bikerent-net
+
+  notification-service:
+    build: ./notification-service
+    container_name: notify-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SERVER_PORT=8082
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - bikerent-net
+
+  bikerent-rest:
+    build: ./bikerent-rest
+    container_name: main-rest
+    ports:
+      - "8080:8080"
+    environment:
+      # Подключение к RabbitMQ
+      - SPRING_RABBITMQ_HOST=rabbitmq
+
+      # Подключение к gRPC (используем имя сервиса как хост)
+      - GRPC_CLIENT_STATS_SERVICE_ADDRESS=static://statistics-service:9090
+
+      # Подключение к БД (используем имя сервиса 'postgres' как хост)
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/bikerent_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+
+      # Трассировка
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      statistics-service:
+        condition: service_started
+    networks:
+      - bikerent-net
+    # --- ВИЗУАЛИЗАЦИЯ И CI/CD ---
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: bikerent-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - bikerent-net
+
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: bikerent-jenkins
+    user: root # Нужно, чтобы дженкинс мог пользоваться докером внутри контейнера
+    ports:
+      - "8088:8080" # Внешний порт 8088, так как 8080 занят REST-сервисом
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      # Пробрасываем докер-сокет, чтобы Дженкинс мог управлять Докером на твоем компе
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - bikerent-net
+
+volumes:
+  pg_data:
+  jenkins_home:
+
+networks:
+  bikerent-net:
+    driver: bridge

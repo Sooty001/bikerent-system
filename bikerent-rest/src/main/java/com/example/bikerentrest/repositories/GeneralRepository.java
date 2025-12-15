@@ -1,0 +1,28 @@
+package com.example.bikerentrest.repositories;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.repository.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@NoRepositoryBean
+public interface GeneralRepository<T, ID> extends Repository<T, ID> {
+    <S extends T> S save(S entity);
+
+    <S extends T> Iterable<S> saveAll(Iterable<S> entities);
+
+    List<T> findAll();
+
+    Page<T> findAll(Pageable pageable);
+
+    Iterable<T> findAllById(Iterable<ID> ids);
+
+    Optional<T> findById(ID id);
+
+    boolean existsById(ID id);
+
+    Long count();
+}

@@ -1,0 +1,84 @@
+type Customer {
+    id: ID!
+    firstName: String
+    lastName: String
+    patronymic: String
+    phoneNumber: String
+    email: String
+    registrationDate: String
+}
+
+type Bicycle {
+    id: ID!
+    modelName: String
+    type: String
+    frameSize: String
+    status: String
+    pricePerHour: Float
+    description: String
+    photoUrl: String
+}
+
+type BicyclePage {
+    content: [Bicycle]
+    page: Int
+    size: Int
+    totalElements: Int
+    totalPages: Int
+    last: Boolean
+}
+
+type Booking {
+    id: ID!
+    customer: Customer
+    bicycle: Bicycle
+    plannedStartTime: String
+    plannedReturnTime: String
+    status: String
+    createdAt: String
+}
+
+type Rental {
+    id: ID!
+    customer: Customer
+    bicycle: Bicycle
+    startTime: String
+    endTime: String
+    expectedReturnTime: String
+    totalCost: Float
+    status: String
+}
+
+type Query {
+    customers: [Customer]
+    customerById(id: ID!): Customer
+    bicycles(status: String, page: Int = 0, size: Int = 10): BicyclePage
+    bicycleById(id: ID!): Bicycle
+    bookings: [Booking]
+    bookingById(id: ID!): Booking
+    rentalById(id: ID!): Rental
+}
+
+input CustomerInput {
+    firstName: String!
+    lastName: String!
+    patronymic: String
+    phoneNumber: String!
+    email: String
+}
+
+input BookingInput {
+    customerId: ID!
+    bicycleId: ID!
+    plannedStartTime: String!
+    plannedReturnTime: String!
+}
+
+type Mutation {
+    registerCustomer(input: CustomerInput!): Customer
+    startWalkInRental(customerId: ID!, bicycleId: ID!, expectedReturnTime: String!): Rental
+    startRentalFromBooking(bookingId: ID!): Rental
+    completeRental(rentalId: ID!): Rental
+    createBooking(input: BookingInput!): Booking
+    cancelBooking(bookingId: ID!): Booking
+}
