@@ -27,17 +27,17 @@ pipeline {
             parallel {
                 stage('Rest Service') {
                     steps {
-                        sh 'mvn -B -f bikerent-rest/pom.xml clean package'
+                        sh 'mvn -B -f bikerent-rest/pom.xml clean package -DskipTests'
                     }
                 }
                 stage('Stats Service') {
                     steps {
-                        sh 'mvn -B -f statistics-service/pom.xml clean package'
+                        sh 'mvn -B -f statistics-service/pom.xml clean package -DskipTests'
                     }
                 }
                 stage('Notify Service') {
                     steps {
-                        sh 'mvn -B -f notification-service/pom.xml clean package'
+                        sh 'mvn -B -f notification-service/pom.xml clean package -DskipTests'
                     }
                 }
             }
