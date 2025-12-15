@@ -111,7 +111,7 @@ public class GlobalEventListener {
         try {
             log.info("Received Rating Event: {}", event);
 
-            // 1. Превращаем событие в JSON-строку для браузера
+            // 1. Превращаем событие в JSON-строку для браузера орр
             String jsonMessage = objectMapper.writeValueAsString(event);
 
             // 2. Отправляем всем подключенным браузерам
