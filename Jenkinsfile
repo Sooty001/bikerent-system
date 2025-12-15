@@ -43,13 +43,11 @@ pipeline {
             }
         }
 
-        /*
         stage('Deploy (Docker)') {
             steps {
                 echo 'Rebuilding containers...'
-                sh 'docker compose up -d --build'
+                sh 'docker compose -f docker-compose.yml up -d --build bikerent-rest statistics-service notification-service'
             }
         }
-        */
     }
 }
