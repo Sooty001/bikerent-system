@@ -46,7 +46,7 @@ pipeline {
         stage('Deploy (Docker)') {
             steps {
                 echo 'Rebuilding containers...'
-                sh 'docker compose -f docker-compose.yml up -d --build bikerent-rest statistics-service notification-service'
+                sh 'docker compose -p bikerent-system -f docker-compose.yml up -d --build bikerent-rest statistics-service notification-service'
             }
         }
     }
