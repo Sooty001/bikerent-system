@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/bicycles")
 public interface BicycleApi {
 
-    @Operation(summary = "Получить список всех велосипедов c пагинацией",
+    @Operation(summary = "Получить список всех велосипедов c пагинацией #######test###",
             description = "Позволяет фильтровать по статусу и получать данные постранично")
     @ApiResponse(responseCode = "200", description = "Страница с велосипедами получена")
     @GetMapping
