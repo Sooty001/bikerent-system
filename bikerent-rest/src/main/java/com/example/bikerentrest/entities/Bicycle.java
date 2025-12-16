@@ -43,7 +43,6 @@ public class Bicycle extends BaseEntity {
     public String getSize() { return size; }
     public void setSize(String size) { this.size = size; }
 
-    // Важно: тип теперь BicycleStatus
     public BicycleStatus getStatus() { return status; }
     public void setStatus(BicycleStatus status) { this.status = status; }
 
