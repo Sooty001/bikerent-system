@@ -33,7 +33,7 @@ public class BicycleService {
 
     public BicycleResponse addBicycle(BicycleRequest request) {
         Bicycle bicycle = modelMapper.map(request, Bicycle.class);
-        bicycle.setStatus(BicycleStatus.AVAILABLE); // Используем ENUM
+        bicycle.setStatus(BicycleStatus.AVAILABLE);
 
         Bicycle saved = bicycleRepository.save(bicycle);
         return modelMapper.map(saved, BicycleResponse.class);
@@ -41,7 +41,6 @@ public class BicycleService {
 
     @Transactional(readOnly = true)
     public BicycleResponse findById(Long id) {
-        // ... (код поиска не изменился)
         Bicycle bicycle = bicycleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Велосипед", id));
         if (bicycle.isDeleted()) throw new ResourceNotFoundException("Велосипед (удален)", id);
@@ -59,13 +58,10 @@ public class BicycleService {
         Page<Bicycle> bicyclePage;
 
         if (status != null && !status.isBlank()) {
-            // Преобразуем входящую строку (из URL) в Enum
-            // toUpperCase() нужен, так как константы обычно капсом, а в URL может прийти "available"
             try {
                 BicycleStatus statusEnum = BicycleStatus.valueOf(status.toUpperCase());
                 bicyclePage = bicycleRepository.findByStatusAndDeletedFalse(statusEnum, pageable);
             } catch (IllegalArgumentException e) {
-                // Если передали кривой статус, возвращаем пустой список или все (тут решим вернуть все)
                 bicyclePage = bicycleRepository.findByDeletedFalse(pageable);
             }
         } else {
@@ -88,7 +84,6 @@ public class BicycleService {
         Bicycle bicycle = bicycleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Велосипед", id));
 
-        // Преобразуем String в Enum
         try {
             bicycle.setStatus(BicycleStatus.valueOf(newStatus.toUpperCase()));
             bicycleRepository.save(bicycle);
@@ -97,7 +92,6 @@ public class BicycleService {
         }
     }
 
-    // Перегрузка метода для внутреннего использования с Enum
     public void updateBicycleStatus(Long id, BicycleStatus newStatus) {
         Bicycle bicycle = bicycleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Велосипед", id));

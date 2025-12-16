@@ -28,7 +28,7 @@ public class Customer extends BaseEntity {
         this.patronymic = patronymic;
         this.phoneNumber = phoneNumber;
         this.email = email;
-        this.registrationDate = LocalDateTime.now(); // Дата ставится автоматически
+        this.registrationDate = LocalDateTime.now();
         this.deleted = false;
     }
 

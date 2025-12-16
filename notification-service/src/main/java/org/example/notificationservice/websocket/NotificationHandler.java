@@ -16,7 +16,6 @@ public class NotificationHandler extends TextWebSocketHandler {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationHandler.class);
 
-    // Список активных сессий (потокобезопасный)
     private final CopyOnWriteArrayList<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
     @Override
@@ -31,7 +30,6 @@ public class NotificationHandler extends TextWebSocketHandler {
         log.info("WebSocket disconnected: {}", session.getId());
     }
 
-    // Метод для рассылки сообщения всем (Broadcast)
     public void broadcast(String message) {
         for (WebSocketSession session : sessions) {
             if (session.isOpen()) {

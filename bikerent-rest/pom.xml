@@ -94,7 +94,6 @@
 			<version>1.0</version>
 		</dependency>
 
-		<!-- gRPC -->
 		<dependency>
 			<groupId>net.devh</groupId>
 			<artifactId>grpc-client-spring-boot-starter</artifactId>
@@ -116,13 +115,11 @@
 			<version>${grpc.version}</version>
 		</dependency>
 
-		<!-- 1. НУЖНО ДЛЯ SPRING BOOT (Jakarta) -->
 		<dependency>
 			<groupId>jakarta.annotation</groupId>
 			<artifactId>jakarta.annotation-api</artifactId>
 		</dependency>
 
-		<!-- 2. НУЖНО ДЛЯ gRPC ГЕНЕРАЦИИ (Javax) - ВОТ ЭТОГО НЕ ХВАТАЛО -->
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>

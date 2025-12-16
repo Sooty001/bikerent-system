@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class InternalAuditListener {
 
-    // Слушаем Fanout обменник, создаем СВОЮ уникальную очередь
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(name = "q.rest.audit", durable = "true"),
             exchange = @Exchange(name = "rental-rating-fanout", type = "fanout")

@@ -19,7 +19,6 @@ import java.util.List;
 @Service
 @Transactional
 public class BookingService {
-    // ... поля и конструктор ...
     private final BookingRepository bookingRepository;
     private final CustomerService customerService;
     private final BicycleService bicycleService;
@@ -44,7 +43,6 @@ public class BookingService {
             throw new IllegalStateException("Велосипед уже забронирован на это время");
         }
 
-        // ИСПОЛЬЗУЕМ КОНСТРУКТОР
         Booking booking = new Booking(
                 customer,
                 bicycle,
@@ -60,11 +58,10 @@ public class BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Бронирование", id));
 
-        booking.setStatus(BookingStatus.CANCELLED); // ENUM
+        booking.setStatus(BookingStatus.CANCELLED);
         return modelMapper.map(bookingRepository.save(booking), BookingResponse.class);
     }
 
-    // ... findById, findEntityById, findAll (без изменений, кроме использования modelMapper) ...
     @Transactional(readOnly = true)
     public BookingResponse findById(Long id) {
         return bookingRepository.findById(id)

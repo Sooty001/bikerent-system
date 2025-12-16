@@ -14,7 +14,7 @@ public class RabbitMQConfig {
     public static final String EXCHANGE_NAME = "bikerent-exchange";
     public static final String ROUTING_KEY_CUSTOMER_REGISTERED = "customer.registered";
     public static final String ROUTING_KEY_BICYCLE_DELETED = "bicycle.deleted";
-    public static final String FANOUT_EXCHANGE = "rental-rating-fanout"; // Имя нового обменника
+    public static final String FANOUT_EXCHANGE = "rental-rating-fanout";
 
     @Bean
     public TopicExchange bikeRentExchange() {
@@ -31,14 +31,12 @@ public class RabbitMQConfig {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(messageConverter);
 
-        // Callback for Publisher Confirms
         rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
             if (!ack) {
                 System.err.println("RABBITMQ ERROR: Message not delivered to broker! Reason: " + cause);
             }
         });
 
-        // Callback for Returned Messages
         rabbitTemplate.setReturnsCallback(returned -> {
             System.err.println("RABBITMQ RETURN: Message returned: " + returned.getMessage());
         });

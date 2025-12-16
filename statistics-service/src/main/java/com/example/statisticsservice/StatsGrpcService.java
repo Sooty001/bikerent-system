@@ -18,8 +18,6 @@ public class StatsGrpcService extends StatisticsServiceGrpc.StatisticsServiceImp
 
     @Override
     public void getGeneralStats(GetStatsRequest request, StreamObserver<GetStatsResponse> responseObserver) {
-        // Логика как в AnalyticsServiceImpl: создаем ответ, отправляем onNext, закрываем onCompleted
-        // add comment 3
         GetStatsResponse response = GetStatsResponse.newBuilder()
                 .setTotalCustomers(statsStore.getTotalCustomers())
                 .setLastEventMessage(statsStore.getLastEvent())
@@ -31,7 +29,6 @@ public class StatsGrpcService extends StatisticsServiceGrpc.StatisticsServiceImp
 
     @Override
     public void calculateRentalRating(CalculateRatingRequest request, StreamObserver<CalculateRatingResponse> responseObserver) {
-        // Простая логика для лабы: чем дороже поездка, тем круче рейтинг
         log.info("Calculating rating for rental ID: {}", request.getRentalId());
         int score = (int) request.getTotalCost() * 10;
         String level = (score > 500) ? "GOLD" : "STANDARD";

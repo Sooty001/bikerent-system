@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 public interface BookingRepository extends GeneralRepository<Booking, Long> {
 
-    // В SQL запросе Enum корректно преобразуется в строку благодаря JPA
     @Query("SELECT COUNT(b) > 0 FROM Booking b " +
             "WHERE b.bicycle.id = :bicycleId " +
             "AND b.status = 'CONFIRMED' " +

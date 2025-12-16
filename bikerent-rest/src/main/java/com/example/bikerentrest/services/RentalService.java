@@ -62,7 +62,6 @@ public class RentalService {
             throw new IllegalStateException("Велосипед недоступен");
         }
 
-        // ИСПОЛЬЗУЕМ КОНСТРУКТОР
         Rental rental = new Rental(
                 customer,
                 bicycle,
@@ -85,7 +84,6 @@ public class RentalService {
             throw new IllegalStateException("Велосипед занят");
         }
 
-        // ИСПОЛЬЗУЕМ КОНСТРУКТОР (данные берем из брони)
         Rental rental = new Rental(
                 booking.getCustomer(),
                 booking.getBicycle(),
@@ -108,7 +106,6 @@ public class RentalService {
             throw new IllegalStateException("Аренда уже завершена");
         }
 
-        // 1. Логика БД (завершение аренды)
         LocalDateTime endTime = LocalDateTime.now();
         rental.setEndTime(endTime);
 
@@ -123,18 +120,14 @@ public class RentalService {
         Rental saved = rentalRepository.save(rental);
         bicycleService.updateBicycleStatus(rental.getBicycle().getId(), BicycleStatus.AVAILABLE);
 
-        // 2. Логика gRPC и Fanout (интеграция)
         try {
-            // gRPC запрос
             CalculateRatingRequest grpcRequest = CalculateRatingRequest.newBuilder()
                     .setRentalId(saved.getId())
                     .setTotalCost(saved.getTotalCost())
                     .build();
 
-            // Синхронный вызов
             CalculateRatingResponse grpcResponse = statsClient.calculateRentalRating(grpcRequest);
 
-            // Формирование события
             RentalRatedEvent event = new RentalRatedEvent(
                     saved.getId(),
                     saved.getCustomer().getId(),
@@ -142,11 +135,9 @@ public class RentalService {
                     grpcResponse.getScore()
             );
 
-            // Отправка в Fanout
             rabbitTemplate.convertAndSend(RabbitMQConfig.FANOUT_EXCHANGE, "", event);
 
         } catch (Exception e) {
-            // Логируем ошибку, но не откатываем транзакцию (поездка все равно завершена)
             System.err.println("WARNING: Не удалось рассчитать рейтинг: " + e.getMessage());
         }
 

@@ -34,13 +34,11 @@ public class CustomerService {
             throw new IllegalStateException("Клиент с таким номером уже существует");
         }
 
-        // Request -> Entity
         Customer customer = modelMapper.map(request, Customer.class);
-        customer.setRegistrationDate(LocalDateTime.now()); // Устанавливаем дату явно
+        customer.setRegistrationDate(LocalDateTime.now());
 
         Customer saved = customerRepository.save(customer);
 
-        // RabbitMQ logic
         CustomerRegisteredEvent event = new CustomerRegisteredEvent(
                 saved.getId(),
                 saved.getFirstName() + " " + saved.getLastName(),
@@ -48,7 +46,6 @@ public class CustomerService {
         );
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY_CUSTOMER_REGISTERED, event);
 
-        // Entity -> Response
         return modelMapper.map(saved, CustomerResponse.class);
     }
 

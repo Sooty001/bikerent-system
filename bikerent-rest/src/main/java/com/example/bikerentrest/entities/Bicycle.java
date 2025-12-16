@@ -11,7 +11,7 @@ public class Bicycle extends BaseEntity {
     private String type;
     private String size;
 
-    @Enumerated(EnumType.STRING) // Сохраняем как строку: "AVAILABLE"
+    @Enumerated(EnumType.STRING)
     private BicycleStatus status;
 
     private Double pricePerHour;

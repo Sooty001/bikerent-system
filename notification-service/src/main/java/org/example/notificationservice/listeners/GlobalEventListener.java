@@ -24,9 +24,8 @@ public class GlobalEventListener {
     private static final Logger log = LoggerFactory.getLogger(GlobalEventListener.class);
 
     private final NotificationHandler notificationHandler;
-    private final ObjectMapper objectMapper; // Для JSON
+    private final ObjectMapper objectMapper;
 
-    // Idempotency check set
     private final Set<Long> processedBicycleDeletions = ConcurrentHashMap.newKeySet();
 
     public GlobalEventListener(NotificationHandler notificationHandler) {
@@ -66,7 +65,6 @@ public class GlobalEventListener {
     public void handleBicycleDeleted(@Payload BicycleDeletedEvent event, Channel channel,
                                      @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
         try {
-            // Idempotency check
             if (!processedBicycleDeletions.add(event.bicycleId())) {
                 log.warn("Duplicate bicycle deletion event for ID: {}. Skipping.", event.bicycleId());
                 channel.basicAck(deliveryTag, false);
@@ -75,7 +73,6 @@ public class GlobalEventListener {
 
             log.info("[Admin Alert] Bicycle ID {} was deleted. Notifying admins.", event.bicycleId());
 
-            // Simulation of a fatal error for DLQ test (Targeting ID 2)
             if (event.bicycleId() == 2) {
                 throw new RuntimeException("Simulated error for DLQ test!");
             }
@@ -83,12 +80,10 @@ public class GlobalEventListener {
             channel.basicAck(deliveryTag, false);
         } catch (Exception e) {
             log.error("Error processing bicycle deletion: {}", event, e);
-            // Send to DLQ (requeue = false)
             channel.basicNack(deliveryTag, false, false);
         }
     }
 
-    // DLQ Listener
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(name = "notification-dlq", durable = "true"),
             exchange = @Exchange(name = "dlx-exchange", type = "topic", durable = "true"),
@@ -111,10 +106,8 @@ public class GlobalEventListener {
         try {
             log.info("Received Rating Event: {}", event);
 
-            // 1. Превращаем событие в JSON-строку для браузера орр
             String jsonMessage = objectMapper.writeValueAsString(event);
 
-            // 2. Отправляем всем подключенным браузерам
             notificationHandler.broadcast(jsonMessage);
 
             log.info("Sent to WebSockets: {}", jsonMessage);

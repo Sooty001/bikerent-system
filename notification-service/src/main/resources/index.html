@@ -33,7 +33,6 @@
     let socket;
 
     function connect() {
-        // Подключаемся к notification-service (порт 8082)
         socket = new WebSocket('ws://localhost:8082/ws/notifications');
 
         socket.onopen = () => {
@@ -45,7 +44,6 @@
             console.log("Пришло сообщение:", event.data);
             const data = JSON.parse(event.data);
 
-            // Если это наше событие RentalRatedEvent
             if (data.level) {
                 showNotification(data);
             }
@@ -54,13 +52,12 @@
         socket.onclose = () => {
             statusDiv.innerText = '🔴 Соединение разорвано. Переподключение...';
             statusDiv.className = 'disconnected';
-            setTimeout(connect, 3000); // Реконнект через 3 сек
+            setTimeout(connect, 3000);
         };
     }
 
     function showNotification(data) {
         const div = document.createElement('div');
-        // Добавляем класс стиля в зависимости от уровня (GOLD, SILVER...)
         div.className = `card level-${data.level}`;
 
         div.innerHTML = `
@@ -70,7 +67,7 @@
             <p><strong>Статус:</strong> <span style="font-size: 1.2em; font-weight: bold;">${data.level}</span></p>
             <small>Rental ID: ${data.rentalId}</small>
         `;
-        listDiv.prepend(div); // Добавляем сверху
+        listDiv.prepend(div);
     }
 
     connect();

@@ -1,20 +1,17 @@
 version: "3.8"
 
 services:
-  # --- ИНФРАСТРУКТУРА ---
-
-  # 1. База данных
   postgres:
     image: postgres:16-alpine
     container_name: bikerent-db
     ports:
-      - "5435:5432" # Внешний порт 5435 (чтобы не конфликтовал с твоим локальным Postgres на 5432)
+      - "5435:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=bikerent_db
     volumes:
-      - pg_data:/var/lib/postgresql/data # Сохраняем данные на диск
+      - pg_data:/var/lib/postgresql/data
     networks:
       - bikerent-net
     healthcheck:
@@ -23,7 +20,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # 2. Брокер сообщений
   rabbitmq:
     image: rabbitmq:3.13-management
     container_name: bikerent-rabbit
@@ -38,7 +34,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # 3. Трассировка
   zipkin:
     image: openzipkin/zipkin
     container_name: bikerent-zipkin
@@ -47,7 +42,6 @@ services:
     networks:
       - bikerent-net
 
-  # 4. Метрики
   prometheus:
     image: prom/prometheus
     volumes:
@@ -57,14 +51,13 @@ services:
     networks:
       - bikerent-net
 
-  # --- МИКРОСЕРВИСЫ ---
 
   statistics-service:
     build: ./statistics-service
     container_name: stats-service
     ports:
-      - "8083:8083" # Web
-      - "9091:9090" # gRPC
+      - "8083:8083"
+      - "9091:9090"
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SERVER_PORT=8083
@@ -99,18 +92,14 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # Подключение к RabbitMQ
       - SPRING_RABBITMQ_HOST=rabbitmq
 
-      # Подключение к gRPC (используем имя сервиса как хост)
       - GRPC_CLIENT_STATS_SERVICE_ADDRESS=static://statistics-service:9090
 
-      # Подключение к БД (используем имя сервиса 'postgres' как хост)
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/bikerent_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
 
-      # Трассировка
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
       - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=*
     depends_on:
@@ -122,7 +111,6 @@ services:
         condition: service_started
     networks:
       - bikerent-net
-    # --- ВИЗУАЛИЗАЦИЯ И CI/CD ---
 
   grafana:
     image: grafana/grafana:latest
