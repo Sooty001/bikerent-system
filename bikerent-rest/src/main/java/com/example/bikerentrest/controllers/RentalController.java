@@ -10,6 +10,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 public class RentalController implements RentalApi {
 
@@ -22,7 +24,7 @@ public class RentalController implements RentalApi {
     }
 
     @Override
-    public EntityModel<RentalResponse> getRentalById(Long id) {
+    public EntityModel<RentalResponse> getRentalById(UUID id) {
         RentalResponse rental = rentalService.findById(id);
         return rentalAssembler.toModel(rental);
     }
@@ -37,7 +39,7 @@ public class RentalController implements RentalApi {
     }
 
     @Override
-    public ResponseEntity<EntityModel<RentalResponse>> startRentalFromBooking(Long bookingId) {
+    public ResponseEntity<EntityModel<RentalResponse>> startRentalFromBooking(UUID bookingId) {
         RentalResponse rental = rentalService.startRentalFromBooking(bookingId);
         EntityModel<RentalResponse> entityModel = rentalAssembler.toModel(rental);
         return ResponseEntity
@@ -46,7 +48,7 @@ public class RentalController implements RentalApi {
     }
 
     @Override
-    public EntityModel<RentalResponse> completeRental(Long id) {
+    public EntityModel<RentalResponse> completeRental(UUID id) {
         RentalResponse rental = rentalService.completeRental(id);
         return rentalAssembler.toModel(rental);
     }

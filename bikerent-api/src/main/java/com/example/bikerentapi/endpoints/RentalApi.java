@@ -10,6 +10,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Tag(name = "rentals", description = "API для управления текущими арендами")
 @RequestMapping("/api/rentals")
 public interface RentalApi {
@@ -17,7 +19,7 @@ public interface RentalApi {
     @Operation(summary = "Получить информацию об аренде по ID")
     @ApiResponse(responseCode = "200", description = "Аренда найдена")
     @GetMapping("/{id}")
-    EntityModel<RentalResponse> getRentalById(@PathVariable Long id);
+    EntityModel<RentalResponse> getRentalById(@PathVariable UUID id);
 
     @Operation(summary = "Начать аренду для клиента (без брони)")
     @PostMapping("/walk-in")
@@ -25,9 +27,9 @@ public interface RentalApi {
 
     @Operation(summary = "Начать аренду на основе существующего бронирования")
     @PostMapping("/from-booking/{bookingId}")
-    ResponseEntity<EntityModel<RentalResponse>> startRentalFromBooking(@PathVariable Long bookingId);
+    ResponseEntity<EntityModel<RentalResponse>> startRentalFromBooking(@PathVariable UUID bookingId);
 
     @Operation(summary = "Завершить аренду и рассчитать стоимость")
     @PostMapping("/{id}/complete")
-    EntityModel<RentalResponse> completeRental(@PathVariable Long id);
+    EntityModel<RentalResponse> completeRental(@PathVariable UUID id);
 }

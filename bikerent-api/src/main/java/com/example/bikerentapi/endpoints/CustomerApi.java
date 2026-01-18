@@ -11,6 +11,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Tag(name = "customers", description = "API для управления базой клиентов")
 @RequestMapping("/api/customers")
 public interface CustomerApi {
@@ -28,10 +30,10 @@ public interface CustomerApi {
     @Operation(summary = "Получить информацию о клиенте по ID")
     @ApiResponse(responseCode = "200", description = "Клиент найден")
     @GetMapping("/{id}")
-    EntityModel<CustomerResponse> getCustomerById(@PathVariable Long id);
+    EntityModel<CustomerResponse> getCustomerById(@PathVariable UUID id);
 
     @Operation(summary = "Удалить клиента")
     @ApiResponse(responseCode = "204", description = "Клиент успешно помечен как удаленный")
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteCustomer(@PathVariable Long id);
+    ResponseEntity<Void> deleteCustomer(@PathVariable UUID id);
 }

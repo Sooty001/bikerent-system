@@ -1,18 +1,22 @@
 package com.example.bikerentrest.graphql;
 
+import com.example.bikerentapi.dto.request.BicycleRequest;
 import com.example.bikerentapi.dto.response.BicycleResponse;
 import com.example.bikerentapi.dto.response.PagedResponse;
-import com.example.bikerentrest.services.BicycleService;
+import com.example.bikerentrest.services.Impl.BicycleServiceImpl;
 import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
+
+import java.util.UUID;
 
 @DgsComponent
 public class BicycleDataFetcher {
 
-    private final BicycleService bicycleService;
+    private final BicycleServiceImpl bicycleService;
 
-    public BicycleDataFetcher(BicycleService bicycleService) {
+    public BicycleDataFetcher(BicycleServiceImpl bicycleService) {
         this.bicycleService = bicycleService;
     }
 
@@ -25,7 +29,18 @@ public class BicycleDataFetcher {
     }
 
     @DgsQuery
-    public BicycleResponse bicycleById(@InputArgument Long id) {
+    public BicycleResponse bicycleById(@InputArgument UUID id) {
         return bicycleService.findById(id);
+    }
+
+    @DgsMutation
+    public BicycleResponse addBicycle(@InputArgument("input") BicycleRequest request) {
+        return bicycleService.addBicycle(request);
+    }
+
+    @DgsMutation
+    public boolean deleteBicycle(@InputArgument UUID id) {
+        bicycleService.deleteById(id);
+        return true;
     }
 }

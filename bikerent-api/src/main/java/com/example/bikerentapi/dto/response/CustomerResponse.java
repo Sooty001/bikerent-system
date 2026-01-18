@@ -5,13 +5,15 @@ import org.springframework.hateoas.server.core.Relation;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 @Relation(collectionRelation = "customers", itemRelation = "customer")
 public class CustomerResponse extends RepresentationModel<CustomerResponse> {
-    private Long id;
+    private UUID id;
     private String firstName;
     private String lastName;
     private String patronymic;
+    private Integer loyaltyPoints;
     private String phoneNumber;
     private String email;
     private LocalDateTime registrationDate;
@@ -20,18 +22,19 @@ public class CustomerResponse extends RepresentationModel<CustomerResponse> {
     public CustomerResponse() {
     }
 
-    public CustomerResponse(Long id, String firstName, String lastName, String patronymic, String phoneNumber, String email, LocalDateTime registrationDate, Boolean isDeleted) {
+    public CustomerResponse(UUID id, String firstName, String lastName, String patronymic, Integer loyaltyPoints, String phoneNumber, String email, LocalDateTime registrationDate, Boolean isDeleted) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.patronymic = patronymic;
+        this.loyaltyPoints = loyaltyPoints;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.registrationDate = registrationDate;
         this.isDeleted = isDeleted;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -45,6 +48,10 @@ public class CustomerResponse extends RepresentationModel<CustomerResponse> {
 
     public String getPatronymic() {
         return patronymic;
+    }
+
+    public Integer getLoyaltyPoints() {
+        return loyaltyPoints;
     }
 
     public String getPhoneNumber() {

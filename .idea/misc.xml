@@ -6,9 +6,11 @@
       <list>
         <option value="$PROJECT_DIR$/bikerent-api/pom.xml" />
         <option value="$PROJECT_DIR$/bikerent-rest/pom.xml" />
-        <option value="$PROJECT_DIR$/events-contract/pom.xml" />
         <option value="$PROJECT_DIR$/notification-service/pom.xml" />
         <option value="$PROJECT_DIR$/statistics-service/pom.xml" />
+        <option value="$PROJECT_DIR$/bikerent-contracts/pom.xml" />
+        <option value="$PROJECT_DIR$/pricing-service/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xml" />
       </list>
     </option>
   </component>

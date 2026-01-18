@@ -7,9 +7,10 @@ import org.springframework.data.repository.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @NoRepositoryBean
-public interface GeneralRepository<T, ID> extends Repository<T, ID> {
+public interface GeneralRepository<T, UUID> extends Repository<T, UUID> {
     <S extends T> S save(S entity);
 
     <S extends T> Iterable<S> saveAll(Iterable<S> entities);
@@ -18,11 +19,11 @@ public interface GeneralRepository<T, ID> extends Repository<T, ID> {
 
     Page<T> findAll(Pageable pageable);
 
-    Iterable<T> findAllById(Iterable<ID> ids);
+    Iterable<T> findAllById(Iterable<UUID> ids);
 
-    Optional<T> findById(ID id);
+    Optional<T> findById(UUID id);
 
-    boolean existsById(ID id);
+    boolean existsById(UUID id);
 
     Long count();
 }

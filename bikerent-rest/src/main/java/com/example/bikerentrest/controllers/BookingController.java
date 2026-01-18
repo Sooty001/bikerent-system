@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class BookingController implements BookingApi {
@@ -31,7 +32,7 @@ public class BookingController implements BookingApi {
     }
 
     @Override
-    public EntityModel<BookingResponse> getBookingById(Long id) {
+    public EntityModel<BookingResponse> getBookingById(UUID id) {
         BookingResponse booking = bookingService.findById(id);
         return bookingAssembler.toModel(booking);
     }
@@ -47,7 +48,7 @@ public class BookingController implements BookingApi {
     }
 
     @Override
-    public EntityModel<BookingResponse> cancelBooking(Long id) {
+    public EntityModel<BookingResponse> cancelBooking(UUID id) {
         BookingResponse cancelledBooking = bookingService.cancelBooking(id);
         return bookingAssembler.toModel(cancelledBooking);
     }

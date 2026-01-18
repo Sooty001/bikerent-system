@@ -18,8 +18,8 @@ public class RentalModelAssembler implements RepresentationModelAssembler<Rental
     public EntityModel<RentalResponse> toModel(RentalResponse rental) {
         EntityModel<RentalResponse> rentalModel = EntityModel.of(rental,
                 linkTo(methodOn(RentalController.class).getRentalById(rental.getId())).withSelfRel(),
-                linkTo(methodOn(CustomerController.class).getCustomerById(rental.getCustomer().getId())).withRel("customer"),
-                linkTo(methodOn(BicycleController.class).getBicycleById(rental.getBicycle().getId())).withRel("bicycle")
+                linkTo(methodOn(CustomerController.class).getCustomerById(rental.getCustomerId())).withRel("customer"),
+                linkTo(methodOn(BicycleController.class).getBicycleById(rental.getBicycleId())).withRel("bicycle")
         );
 
         if ("active".equalsIgnoreCase(rental.getStatus())) {

@@ -7,8 +7,7 @@ import com.example.bikerentapi.dto.response.StatusResponse;
 import com.example.bikerentapi.endpoints.BicycleApi;
 import com.example.bikerentrest.assemblers.BicycleModelAssembler;
 import com.example.bikerentrest.services.BicycleService;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.bikerentrest.services.Impl.BicycleServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -16,9 +15,10 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class BicycleController implements BicycleApi {
@@ -27,7 +27,7 @@ public class BicycleController implements BicycleApi {
     private final BicycleModelAssembler bicycleAssembler;
     private final PagedResourcesAssembler<BicycleResponse> pagedAssembler;
 
-    public BicycleController(BicycleService bicycleService, BicycleModelAssembler bicycleAssembler,
+    public BicycleController(BicycleServiceImpl bicycleService, BicycleModelAssembler bicycleAssembler,
                              PagedResourcesAssembler<BicycleResponse> pagedAssembler) {
         this.bicycleService = bicycleService;
         this.bicycleAssembler = bicycleAssembler;
@@ -35,7 +35,7 @@ public class BicycleController implements BicycleApi {
     }
 
     @Override
-    public EntityModel<BicycleResponse> getBicycleById(Long id) {
+    public EntityModel<BicycleResponse> getBicycleById(UUID id) {
         BicycleResponse bicycle = bicycleService.findById(id);
         return bicycleAssembler.toModel(bicycle);
     }
@@ -62,8 +62,8 @@ public class BicycleController implements BicycleApi {
     }
 
     @Override
-    public StatusResponse deleteBicycle(Long id) {
+    public ResponseEntity<Void> deleteBicycle(UUID id) {
         bicycleService.deleteById(id);
-        return new StatusResponse("success", "Велосипед с ID " + id + " успешно удален.");
+        return ResponseEntity.noContent().build();
     }
 }

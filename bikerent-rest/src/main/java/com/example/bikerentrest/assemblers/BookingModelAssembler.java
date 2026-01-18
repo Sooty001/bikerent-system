@@ -20,8 +20,8 @@ public class BookingModelAssembler implements RepresentationModelAssembler<Booki
     public EntityModel<BookingResponse> toModel(BookingResponse booking) {
         EntityModel<BookingResponse> bookingModel = EntityModel.of(booking,
                 linkTo(methodOn(BookingController.class).getBookingById(booking.getId())).withSelfRel(),
-                linkTo(methodOn(CustomerController.class).getCustomerById(booking.getCustomer().getId())).withRel("customer"),
-                linkTo(methodOn(BicycleController.class).getBicycleById(booking.getBicycle().getId())).withRel("bicycle"),
+                linkTo(methodOn(CustomerController.class).getCustomerById(booking.getCustomerId())).withRel("customer"),
+                linkTo(methodOn(BicycleController.class).getBicycleById(booking.getBicycleId())).withRel("bicycle"),
                 linkTo(methodOn(BookingController.class).getAllBookings()).withRel("bookings")
         );
 

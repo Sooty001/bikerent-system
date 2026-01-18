@@ -4,10 +4,11 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Relation(collectionRelation = "bicycles", itemRelation = "bicycle")
 public class BicycleResponse extends RepresentationModel<BicycleResponse> {
-    private Long id;
+    private UUID id;
     private String modelName;
     private String type;
     private String size;
@@ -20,7 +21,7 @@ public class BicycleResponse extends RepresentationModel<BicycleResponse> {
     public BicycleResponse() {
     }
 
-    public BicycleResponse(Long id, String modelName, String type, String size, String status, Double pricePerHour, String description, String photoUrl, Boolean isDeleted) {
+    public BicycleResponse(UUID id, String modelName, String type, String size, String status, Double pricePerHour, String description, String photoUrl, Boolean isDeleted) {
         this.id = id;
         this.modelName = modelName;
         this.type = type;
@@ -32,7 +33,7 @@ public class BicycleResponse extends RepresentationModel<BicycleResponse> {
         this.isDeleted = isDeleted;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 

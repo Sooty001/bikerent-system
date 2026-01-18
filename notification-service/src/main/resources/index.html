@@ -2,76 +2,69 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>BikeRent Notifications</title>
+    <title>WebSocket Test</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f2f5; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); animation: fadein 0.5s; }
-        .level-GOLD { border-left: 5px solid #FFD700; background-color: #FFFDF0; }
-        .level-SILVER { border-left: 5px solid #C0C0C0; background-color: #F8F8F8; }
-        .level-BRONZE { border-left: 5px solid #CD7F32; background-color: #FFF5EE; }
-        .level-STANDARD { border-left: 5px solid #007bff; }
-
-        #status { font-weight: bold; margin-bottom: 20px; color: gray; }
-        .connected { color: green !important; }
-        .disconnected { color: red !important; }
-
-        @keyframes fadein { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: sans-serif; padding: 20px; }
+        #messages { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; background: #f9f9f9; }
+        .log { color: gray; font-size: 0.9em; }
+        .msg { color: green; font-weight: bold; }
+        .error { color: red; }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h2>🚲 Центр уведомлений велопроката</h2>
-    <div id="status" class="disconnected">🔴 Отключено</div>
-    <div id="notifications"></div>
+<h2>Тест уведомлений (Notification Service)</h2>
+<div>
+    Статус: <span id="status" style="color:red">Отключено</span>
 </div>
+<br>
+<div id="messages"></div>
 
 <script>
-    const statusDiv = document.getElementById('status');
-    const listDiv = document.getElementById('notifications');
+    const messagesDiv = document.getElementById('messages');
+    const statusSpan = document.getElementById('status');
     let socket;
 
     function connect() {
-        socket = new WebSocket('ws://localhost:8082/ws/notifications');
+        socket = new WebSocket("ws://localhost:8082/ws/notifications");
 
-        socket.onopen = () => {
-            statusDiv.innerText = '🟢 Подключено к системе';
-            statusDiv.className = 'connected';
+        socket.onopen = function() {
+            statusSpan.textContent = "Подключено";
+            statusSpan.style.color = "green";
+            log("Соединение установлено!");
         };
 
-        socket.onmessage = (event) => {
-            console.log("Пришло сообщение:", event.data);
-            const data = JSON.parse(event.data);
-
-            if (data.level) {
-                showNotification(data);
-            }
+        socket.onmessage = function(event) {
+            addMessage(event.data);
         };
 
-        socket.onclose = () => {
-            statusDiv.innerText = '🔴 Соединение разорвано. Переподключение...';
-            statusDiv.className = 'disconnected';
-            setTimeout(connect, 3000);
+        socket.onclose = function(event) {
+            statusSpan.textContent = "Отключено";
+            statusSpan.style.color = "red";
+            log("Соединение закрыто. Код: " + event.code);
+        };
+
+        socket.onerror = function(error) {
+            log("Ошибка WebSocket (см. консоль)", true);
         };
     }
 
-    function showNotification(data) {
-        const div = document.createElement('div');
-        div.className = `card level-${data.level}`;
+    function log(text, isError = false) {
+        const el = document.createElement('div');
+        el.className = isError ? 'error' : 'log';
+        el.textContent = `[СИСТЕМА] ${text}`;
+        messagesDiv.appendChild(el);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
 
-        div.innerHTML = `
-            <h3>🏁 Аренда завершена!</h3>
-            <p><strong>Клиент ID:</strong> ${data.customerId}</p>
-            <p><strong>Рейтинг поездки:</strong> ${data.score} баллов</p>
-            <p><strong>Статус:</strong> <span style="font-size: 1.2em; font-weight: bold;">${data.level}</span></p>
-            <small>Rental ID: ${data.rentalId}</small>
-        `;
-        listDiv.prepend(div);
+    function addMessage(text) {
+        const el = document.createElement('div');
+        el.className = 'msg';
+        el.textContent = `[УВЕДОМЛЕНИЕ] ${text}`;
+        messagesDiv.appendChild(el);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
     connect();
 </script>
-
 </body>
 </html>

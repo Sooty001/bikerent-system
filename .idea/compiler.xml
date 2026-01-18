@@ -6,19 +6,24 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="bikerent-contracts" />
         <module name="bikerent-rest" />
-        <module name="events-contract" />
         <module name="statistics-service" />
         <module name="bikerent-api" />
         <module name="notification-service" />
+        <module name="pricing-service" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="events-contract" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="bikerent-api" options="-parameters" />
       <module name="bikerent-rest" options="-parameters" />
       <module name="notification-service" options="-parameters" />
+      <module name="pricing-service" options="-parameters" />
       <module name="statistics-service" options="-parameters" />
     </option>
   </component>

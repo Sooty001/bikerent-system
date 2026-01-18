@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.grpc.stats";
+option java_outer_classname = "StatisticsProto";
+
+message GetStatsRequest {}
+
+message GetStatsResponse {
+  int64 total_customers = 1;
+  double total_revenue = 2;
+  int64 total_rentals = 3;
+  double average_check = 4;
+  int64 total_bookings = 5;
+  int64 active_bicycles = 6;
+}
+
+service StatisticsService {
+  rpc GetGeneralStats(GetStatsRequest) returns (GetStatsResponse) {}
+}

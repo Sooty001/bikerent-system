@@ -5,12 +5,13 @@ import org.springframework.hateoas.server.core.Relation;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 @Relation(collectionRelation = "bookings", itemRelation = "booking")
 public class BookingResponse extends RepresentationModel<BookingResponse>{
-    private Long id;
-    private CustomerResponse customer;
-    private BicycleResponse bicycle;
+    private UUID id;
+    private UUID customerId;
+    private UUID bicycleId;
     private LocalDateTime plannedStartTime;
     private LocalDateTime plannedReturnTime;
     private String status;
@@ -19,26 +20,26 @@ public class BookingResponse extends RepresentationModel<BookingResponse>{
     public BookingResponse() {
     }
 
-    public BookingResponse(Long id, CustomerResponse customer, BicycleResponse bicycle, LocalDateTime plannedStartTime, LocalDateTime plannedReturnTime, String status, LocalDateTime createdAt) {
+    public BookingResponse(UUID id, UUID customerId, UUID bicycleId, LocalDateTime plannedStartTime, LocalDateTime plannedReturnTime, String status, LocalDateTime createdAt) {
         this.id = id;
-        this.customer = customer;
-        this.bicycle = bicycle;
+        this.customerId = customerId;
+        this.bicycleId = bicycleId;
         this.plannedStartTime = plannedStartTime;
         this.plannedReturnTime = plannedReturnTime;
         this.status = status;
         this.createdAt = createdAt;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public CustomerResponse getCustomer() {
-        return customer;
+    public UUID getCustomerId() {
+        return customerId;
     }
 
-    public BicycleResponse getBicycle() {
-        return bicycle;
+    public UUID getBicycleId() {
+        return bicycleId;
     }
 
     public LocalDateTime getPlannedStartTime() {
@@ -58,16 +59,16 @@ public class BookingResponse extends RepresentationModel<BookingResponse>{
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        BookingResponse that = (BookingResponse) o;
-        return Objects.equals(id, that.id) && Objects.equals(customer, that.customer) && Objects.equals(bicycle, that.bicycle) && Objects.equals(plannedStartTime, that.plannedStartTime) && Objects.equals(plannedReturnTime, that.plannedReturnTime) && Objects.equals(status, that.status) && Objects.equals(createdAt, that.createdAt);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        if (!super.equals(object)) return false;
+        BookingResponse that = (BookingResponse) object;
+        return Objects.equals(id, that.id) && Objects.equals(customerId, that.customerId) && Objects.equals(bicycleId, that.bicycleId) && Objects.equals(plannedStartTime, that.plannedStartTime) && Objects.equals(plannedReturnTime, that.plannedReturnTime) && Objects.equals(status, that.status) && Objects.equals(createdAt, that.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, customer, bicycle, plannedStartTime, plannedReturnTime, status, createdAt);
+        return Objects.hash(super.hashCode(), id, customerId, bicycleId, plannedStartTime, plannedReturnTime, status, createdAt);
     }
 }

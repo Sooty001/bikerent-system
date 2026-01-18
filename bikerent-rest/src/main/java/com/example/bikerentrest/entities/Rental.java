@@ -8,20 +8,12 @@ import java.time.LocalDateTime;
 @Table(name = "rentals")
 public class Rental extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
     private Customer customer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bicycle_id")
     private Bicycle bicycle;
-
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private LocalDateTime expectedReturnTime;
     private double totalCost;
-
-    @Enumerated(EnumType.STRING)
     private RentalStatus status;
 
     protected Rental() {}
@@ -35,24 +27,69 @@ public class Rental extends BaseEntity {
         this.totalCost = 0.0;
     }
 
-    public Customer getCustomer() { return customer; }
-    public void setCustomer(Customer customer) { this.customer = customer; }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    public Customer getCustomer() {
+        return customer;
+    }
 
-    public Bicycle getBicycle() { return bicycle; }
-    public void setBicycle(Bicycle bicycle) { this.bicycle = bicycle; }
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 
-    public LocalDateTime getStartTime() { return startTime; }
-    public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bicycle_id", nullable = false)
+    public Bicycle getBicycle() {
+        return bicycle;
+    }
 
-    public LocalDateTime getEndTime() { return endTime; }
-    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
+    public void setBicycle(Bicycle bicycle) {
+        this.bicycle = bicycle;
+    }
 
-    public LocalDateTime getExpectedReturnTime() { return expectedReturnTime; }
-    public void setExpectedReturnTime(LocalDateTime expectedReturnTime) { this.expectedReturnTime = expectedReturnTime; }
+    @Column(name = "start_time", nullable = false)
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
 
-    public double getTotalCost() { return totalCost; }
-    public void setTotalCost(double totalCost) { this.totalCost = totalCost; }
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
 
-    public RentalStatus getStatus() { return status; }
-    public void setStatus(RentalStatus status) { this.status = status; }
+    @Column(name = "end_time")
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Column(name = "expected_return_time", nullable = false)
+    public LocalDateTime getExpectedReturnTime() {
+        return expectedReturnTime;
+    }
+
+    public void setExpectedReturnTime(LocalDateTime expectedReturnTime) {
+        this.expectedReturnTime = expectedReturnTime;
+    }
+
+    @Column(name = "total_cost")
+    public double getTotalCost() {
+        return totalCost;
+    }
+
+    public void setTotalCost(double totalCost) {
+        this.totalCost = totalCost;
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    public RentalStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RentalStatus status) {
+        this.status = status;
+    }
 }

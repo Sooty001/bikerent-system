@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class CustomerController implements CustomerApi {
@@ -40,13 +41,13 @@ public class CustomerController implements CustomerApi {
     }
 
     @Override
-    public EntityModel<CustomerResponse> getCustomerById(Long id) {
+    public EntityModel<CustomerResponse> getCustomerById(UUID id) {
         CustomerResponse customer = customerService.findById(id);
         return customerAssembler.toModel(customer);
     }
 
     @Override
-    public ResponseEntity<Void> deleteCustomer(Long id) {
+    public ResponseEntity<Void> deleteCustomer(UUID id) {
         customerService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

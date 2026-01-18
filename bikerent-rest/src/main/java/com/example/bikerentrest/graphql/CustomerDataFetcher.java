@@ -9,7 +9,7 @@ import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
 
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 @DgsComponent
 public class CustomerDataFetcher {
@@ -26,19 +26,18 @@ public class CustomerDataFetcher {
     }
 
     @DgsQuery
-    public CustomerResponse customerById(@InputArgument Long id) {
+    public CustomerResponse customerById(@InputArgument UUID id) {
         return customerService.findById(id);
     }
 
     @DgsMutation
-    public CustomerResponse registerCustomer(@InputArgument("input") Map<String, String> input) {
-        CustomerRequest request = new CustomerRequest(
-                input.get("firstName"),
-                input.get("lastName"),
-                input.get("patronymic"),
-                input.get("phoneNumber"),
-                input.get("email")
-        );
+    public CustomerResponse registerCustomer(@InputArgument("input") CustomerRequest request) {
         return customerService.registerCustomer(request);
+    }
+
+    @DgsMutation
+    public boolean deleteCustomer(@InputArgument UUID id) {
+        customerService.deleteById(id);
+        return true;
     }
 }

@@ -4,6 +4,8 @@ import com.example.bikerentapi.dto.request.RentalRequest;
 import com.example.bikerentapi.dto.response.BicycleResponse;
 import com.example.bikerentapi.dto.response.CustomerResponse;
 import com.example.bikerentapi.dto.response.RentalResponse;
+import com.example.bikerentrest.services.BicycleService;
+import com.example.bikerentrest.services.CustomerService;
 import com.example.bikerentrest.services.RentalService;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsData;
@@ -13,46 +15,54 @@ import com.netflix.graphql.dgs.InputArgument;
 import graphql.schema.DataFetchingEnvironment;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @DgsComponent
 public class RentalDataFetcher {
 
     private final RentalService rentalService;
+    private final CustomerService customerService;
+    private final BicycleService bicycleService;
 
-    public RentalDataFetcher(RentalService rentalService) {
+    public RentalDataFetcher(RentalService rentalService,
+                             CustomerService customerService,
+                             BicycleService bicycleService) {
         this.rentalService = rentalService;
+        this.customerService = customerService;
+        this.bicycleService = bicycleService;
     }
 
     @DgsQuery
-    public RentalResponse rentalById(@InputArgument Long id) {
+    public RentalResponse rentalById(@InputArgument UUID id) {
         return rentalService.findById(id);
     }
 
     @DgsMutation
-    public RentalResponse startWalkInRental(@InputArgument Long customerId, @InputArgument Long bicycleId, @InputArgument String expectedReturnTime) {
+    public RentalResponse startWalkInRental(@InputArgument UUID customerId, @InputArgument UUID bicycleId, @InputArgument String expectedReturnTime) {
         RentalRequest request = new RentalRequest(customerId, bicycleId, LocalDateTime.parse(expectedReturnTime));
         return rentalService.startWalkInRental(request);
     }
 
     @DgsMutation
-    public RentalResponse startRentalFromBooking(@InputArgument Long bookingId) {
+    public RentalResponse startRentalFromBooking(@InputArgument UUID bookingId) {
         return rentalService.startRentalFromBooking(bookingId);
     }
 
     @DgsMutation
-    public RentalResponse completeRental(@InputArgument Long rentalId) {
+    public RentalResponse completeRental(@InputArgument UUID rentalId) {
         return rentalService.completeRental(rentalId);
     }
+
 
     @DgsData(parentType = "Rental", field = "customer")
     public CustomerResponse customerForRental(DataFetchingEnvironment dfe) {
         RentalResponse rental = dfe.getSource();
-        return rental.getCustomer();
+        return customerService.findById(rental.getCustomerId());
     }
 
     @DgsData(parentType = "Rental", field = "bicycle")
     public BicycleResponse bicycleForRental(DataFetchingEnvironment dfe) {
         RentalResponse rental = dfe.getSource();
-        return rental.getBicycle();
+        return bicycleService.findById(rental.getBicycleId());
     }
 }

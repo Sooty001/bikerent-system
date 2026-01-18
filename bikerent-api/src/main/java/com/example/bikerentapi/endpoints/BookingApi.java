@@ -11,6 +11,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Tag(name = "bookings", description = "API для управления бронированиями")
 @RequestMapping("/api/bookings")
 public interface BookingApi {
@@ -24,7 +26,7 @@ public interface BookingApi {
     @ApiResponse(responseCode = "200", description = "Бронирование найдено")
     @ApiResponse(responseCode = "404", description = "Бронирование не найдено")
     @GetMapping("/{id}")
-    EntityModel<BookingResponse> getBookingById(@PathVariable Long id);
+    EntityModel<BookingResponse> getBookingById(@PathVariable UUID id);
 
     @Operation(summary = "Создать новое бронирование")
     @ApiResponse(responseCode = "201", description = "Бронь успешно создана")
@@ -36,5 +38,5 @@ public interface BookingApi {
     @ApiResponse(responseCode = "200", description = "Бронь успешно отменена")
     @ApiResponse(responseCode = "404", description = "Бронь не найдена")
     @PostMapping("/{id}/cancel")
-    EntityModel<BookingResponse> cancelBooking(@PathVariable Long id);
+    EntityModel<BookingResponse> cancelBooking(@PathVariable UUID id);
 }

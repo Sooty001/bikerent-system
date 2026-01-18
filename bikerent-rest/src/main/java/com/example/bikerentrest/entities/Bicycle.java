@@ -10,13 +10,8 @@ public class Bicycle extends BaseEntity {
     private String modelName;
     private String type;
     private String size;
-
-    @Enumerated(EnumType.STRING)
     private BicycleStatus status;
-
     private Double pricePerHour;
-
-    @Column(length = 1000)
     private String description;
     private String photoUrl;
     private boolean deleted = false;
@@ -34,27 +29,76 @@ public class Bicycle extends BaseEntity {
         this.deleted = false;
     }
 
-    public String getModelName() { return modelName; }
-    public void setModelName(String modelName) { this.modelName = modelName; }
+    @Column(name = "model_name", nullable = false)
+    public String getModelName() {
+        return modelName;
+    }
 
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
 
-    public String getSize() { return size; }
-    public void setSize(String size) { this.size = size; }
+    @Column(name = "type", nullable = false)
+    public String getType() {
+        return type;
+    }
 
-    public BicycleStatus getStatus() { return status; }
-    public void setStatus(BicycleStatus status) { this.status = status; }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-    public Double getPricePerHour() { return pricePerHour; }
-    public void setPricePerHour(Double pricePerHour) { this.pricePerHour = pricePerHour; }
+    @Column(name = "size")
+    public String getSize() {
+        return size;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public void setSize(String size) {
+        this.size = size;
+    }
 
-    public String getPhotoUrl() { return photoUrl; }
-    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    public BicycleStatus getStatus() {
+        return status;
+    }
 
-    public boolean isDeleted() { return deleted; }
-    public void setDeleted(boolean deleted) { this.deleted = deleted; }
+    public void setStatus(BicycleStatus status) {
+        this.status = status;
+    }
+
+    @Column(name = "price_per_hour", nullable = false)
+    public Double getPricePerHour() {
+        return pricePerHour;
+    }
+
+    public void setPricePerHour(Double pricePerHour) {
+        this.pricePerHour = pricePerHour;
+    }
+
+    @Column(name = "description", length = 1000)
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Column(name = "photo_url")
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    @Column(name = "is_deleted", nullable = false)
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
 }

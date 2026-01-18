@@ -15,11 +15,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Tag(name = "bicycles", description = "API для управления парком велосипедов")
 @RequestMapping("/api/bicycles")
 public interface BicycleApi {
 
-    @Operation(summary = "Получить список всех велосипедов c пагинацией #######test###",
+    @Operation(summary = "Получить список всех велосипедов c пагинацией",
             description = "Позволяет фильтровать по статусу и получать данные постранично")
     @ApiResponse(responseCode = "200", description = "Страница с велосипедами получена")
     @GetMapping
@@ -38,7 +40,7 @@ public interface BicycleApi {
     @ApiResponse(responseCode = "200", description = "Велосипед найден")
     @ApiResponse(responseCode = "404", description = "Велосипед не найден")
     @GetMapping("/{id}")
-    EntityModel<BicycleResponse> getBicycleById(@PathVariable Long id);
+    EntityModel<BicycleResponse> getBicycleById(@PathVariable UUID id);
 
     @Operation(summary = "Добавить новый велосипед в парк")
     @ApiResponse(responseCode = "201", description = "Велосипед успешно добавлен")
@@ -48,8 +50,8 @@ public interface BicycleApi {
     ResponseEntity<EntityModel<BicycleResponse>> addBicycle(@Valid @RequestBody BicycleRequest request);
 
     @Operation(summary = "Удалить велосипед")
-    @ApiResponse(responseCode = "200", description = "Велосипед успешно помечен как удаленный")
+    @ApiResponse(responseCode = "204", description = "Велосипед успешно помечен как удаленный")
     @ApiResponse(responseCode = "404", description = "Велосипед не найден")
     @DeleteMapping("/{id}")
-    StatusResponse deleteBicycle(@PathVariable Long id);
+    ResponseEntity<Void> deleteBicycle(@PathVariable UUID id);
 }

@@ -6,7 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BicycleRepository extends GeneralRepository<Bicycle, Long> {
+import java.util.UUID;
+
+public interface BicycleRepository extends GeneralRepository<Bicycle, UUID> {
     Page<Bicycle> findByDeletedFalse(Pageable pageable);
     Page<Bicycle> findByStatusAndDeletedFalse(BicycleStatus status, Pageable pageable);
 }

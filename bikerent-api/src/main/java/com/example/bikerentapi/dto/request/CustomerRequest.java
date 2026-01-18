@@ -16,5 +16,6 @@ public record CustomerRequest(
         @NotBlank @Size(min = 10)
         String phoneNumber,
 
-        @Email String email
+        @Email
+        String email
 ) {}

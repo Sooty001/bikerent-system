@@ -1,5 +1,7 @@
 package com.example.bikerentrest.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -11,14 +13,24 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-    public static final String EXCHANGE_NAME = "bikerent-exchange";
-    public static final String ROUTING_KEY_CUSTOMER_REGISTERED = "customer.registered";
-    public static final String ROUTING_KEY_BICYCLE_DELETED = "bicycle.deleted";
-    public static final String FANOUT_EXCHANGE = "rental-rating-fanout";
+
+    private static final Logger log = LoggerFactory.getLogger(RabbitMQConfig.class);
+
+    public static final String TOPIC_EXCHANGE = "bikerent.topic";
+    public static final String FANOUT_EXCHANGE = "bikerent.financial";
+    public static final String KEY_CUSTOMER_REGISTERED = "customer.registered";
+    public static final String KEY_BOOKING_CREATED = "booking.created";
+    public static final String KEY_RENTAL_STARTED = "rental.started";
+    public static final String KEY_BICYCLE_DELETED = "bicycle.deleted";
 
     @Bean
-    public TopicExchange bikeRentExchange() {
-        return new TopicExchange(EXCHANGE_NAME, true, false);
+    public TopicExchange topicExchange() {
+        return new TopicExchange(TOPIC_EXCHANGE, true, false);
+    }
+
+    @Bean
+    public FanoutExchange financialExchange() {
+        return new FanoutExchange(FANOUT_EXCHANGE, true, false);
     }
 
     @Bean
@@ -31,21 +43,20 @@ public class RabbitMQConfig {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(messageConverter);
 
+        rabbitTemplate.setMandatory(true);
+
         rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
-            if (!ack) {
-                System.err.println("RABBITMQ ERROR: Message not delivered to broker! Reason: " + cause);
+            if (ack) {
+            } else {
+                log.error("RABBITMQ ERROR: Message not delivered to broker! Reason: {}", cause);
             }
         });
 
         rabbitTemplate.setReturnsCallback(returned -> {
-            System.err.println("RABBITMQ RETURN: Message returned: " + returned.getMessage());
+            log.warn("RABBITMQ RETURN: Message sent to exchange '{}' with key '{}' was returned. Reason: {}",
+                    returned.getExchange(), returned.getRoutingKey(), returned.getReplyText());
         });
 
         return rabbitTemplate;
-    }
-
-    @Bean
-    public FanoutExchange ratingFanoutExchange() {
-        return new FanoutExchange(FANOUT_EXCHANGE, true, false);
     }
 }
