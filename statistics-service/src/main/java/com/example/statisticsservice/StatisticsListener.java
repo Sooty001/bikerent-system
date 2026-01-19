@@ -1,6 +1,9 @@
 package com.example.statisticsservice;
 
-import com.example.bikerentcontracts.events.*;
+import com.example.bikerentcontracts.events.BicycleDeletedEvent;
+import com.example.bikerentcontracts.events.BookingCreatedEvent;
+import com.example.bikerentcontracts.events.CustomerRegisteredEvent;
+import com.example.bikerentcontracts.events.RentalEndedEvent;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

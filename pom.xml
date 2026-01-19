@@ -14,7 +14,7 @@
     <modules>
         <module>bikerent-api</module>
         <module>bikerent-contracts</module>
-        <module>bikerent-rest</module>
+        <module>bikerent-core</module>
         <module>pricing-service</module>
         <module>statistics-service</module>
         <module>notification-service</module>

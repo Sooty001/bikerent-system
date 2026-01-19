@@ -1,6 +1,9 @@
 package org.example.notificationservice.listeners;
 
-import com.example.bikerentcontracts.events.*;
+import com.example.bikerentcontracts.events.BookingCreatedEvent;
+import com.example.bikerentcontracts.events.CustomerRegisteredEvent;
+import com.example.bikerentcontracts.events.RentalEndedEvent;
+import com.example.bikerentcontracts.events.RentalStartedEvent;
 import com.rabbitmq.client.Channel;
 import org.example.notificationservice.websocket.NotificationHandler;
 import org.slf4j.Logger;
@@ -12,6 +15,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class GlobalEventListener {
@@ -20,6 +25,7 @@ public class GlobalEventListener {
     private final NotificationHandler notificationHandler;
 
     private static final String DLX = "dlx.bikerent";
+    private final Set<String> processedEventIds = ConcurrentHashMap.newKeySet();
 
     public GlobalEventListener(NotificationHandler notificationHandler) {
         this.notificationHandler = notificationHandler;
@@ -38,6 +44,11 @@ public class GlobalEventListener {
             key = "customer.registered"
     ))
     public void onCustomerRegistered(@Payload CustomerRegisteredEvent event, Channel ch, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
+        if (!processedEventIds.add(event.customerId())) {
+            log.warn("Duplicate event CustomerRegisteredEvent: {}. Skip it.", event.customerId());
+            ch.basicAck(tag, false);
+            return;
+        }
         sendNotification("Новый клиент: " + event.fullName(), ch, tag);
     }
 
@@ -54,6 +65,11 @@ public class GlobalEventListener {
             key = "booking.created"
     ))
     public void onBookingCreated(@Payload BookingCreatedEvent event, Channel ch, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
+        if (!processedEventIds.add(event.bookingId())) {
+            log.warn("Duplicate event BookingCreatedEvent: {}.  Skip it.", event.bookingId());
+            ch.basicAck(tag, false);
+            return;
+        }
         sendNotification("Бронь создана: " + event.bicycleId(), ch, tag);
     }
 

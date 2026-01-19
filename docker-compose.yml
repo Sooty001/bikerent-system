@@ -138,9 +138,23 @@ services:
     networks:
       - bikerent-net
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.1
+    container_name: bikerent-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: start-dev
+    ports:
+      - "8180:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data/
+
+
 volumes:
   pg_data:
   jenkins_home:
+  keycloak_data:
 
 networks:
   bikerent-net:

@@ -2,6 +2,13 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/bikerent-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bikerent-contracts/bikerent-contracts-events/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bikerent-contracts/bikerent-contracts-events/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bikerent-contracts/bikerent-contracts-grpc/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bikerent-contracts/bikerent-contracts-grpc/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bikerent-contracts/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bikerent-contracts/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bikerent-core/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bikerent-rest/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/events-contract/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/events-contract/src/main/resources" charset="UTF-8" />
