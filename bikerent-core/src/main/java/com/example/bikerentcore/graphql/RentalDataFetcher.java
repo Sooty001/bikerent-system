@@ -38,7 +38,9 @@ public class RentalDataFetcher {
     }
 
     @DgsMutation
-    public RentalResponse startWalkInRental(@InputArgument UUID customerId, @InputArgument UUID bicycleId, @InputArgument String expectedReturnTime) {
+    public RentalResponse startWalkInRental(@InputArgument UUID customerId,
+                                            @InputArgument UUID bicycleId,
+                                            @InputArgument String expectedReturnTime) {
         RentalRequest request = new RentalRequest(customerId, bicycleId, LocalDateTime.parse(expectedReturnTime));
         return rentalService.startWalkInRental(request);
     }

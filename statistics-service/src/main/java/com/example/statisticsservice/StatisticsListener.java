@@ -14,6 +14,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class StatisticsListener {
@@ -22,6 +24,7 @@ public class StatisticsListener {
     private final StatsStore statsStore;
 
     private static final String DLX_NAME = "dlx.bikerent";
+    private final Set<String> processedEventIds = ConcurrentHashMap.newKeySet();
 
     public StatisticsListener(StatsStore statsStore) {
         this.statsStore = statsStore;
@@ -64,11 +67,19 @@ public class StatisticsListener {
     ))
     public void countBookings(@Payload BookingCreatedEvent event, Channel channel,
                               @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
+
+        if (!processedEventIds.add(event.bookingId())) {
+            log.warn("Duplicate event BookingCreatedEvent: {}. Skip it.", event.bookingId());
+            channel.basicAck(tag, false);
+            return;
+        }
+
         try {
             statsStore.incrementBookings();
             channel.basicAck(tag, false);
         } catch (Exception e) {
             log.error("Error processing booking", e);
+            processedEventIds.remove(event.bookingId());
             channel.basicNack(tag, false, false);
         }
     }

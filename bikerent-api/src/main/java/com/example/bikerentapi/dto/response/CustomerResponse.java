@@ -17,12 +17,12 @@ public class CustomerResponse extends RepresentationModel<CustomerResponse> {
     private String phoneNumber;
     private String email;
     private LocalDateTime registrationDate;
-    private Boolean isDeleted;
+    private Boolean deleted;
 
     public CustomerResponse() {
     }
 
-    public CustomerResponse(UUID id, String firstName, String lastName, String patronymic, Integer loyaltyPoints, String phoneNumber, String email, LocalDateTime registrationDate, Boolean isDeleted) {
+    public CustomerResponse(UUID id, String firstName, String lastName, String patronymic, Integer loyaltyPoints, String phoneNumber, String email, LocalDateTime registrationDate, Boolean deleted) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -31,7 +31,7 @@ public class CustomerResponse extends RepresentationModel<CustomerResponse> {
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.registrationDate = registrationDate;
-        this.isDeleted = isDeleted;
+        this.deleted = deleted;
     }
 
     public UUID getId() {
@@ -67,20 +67,20 @@ public class CustomerResponse extends RepresentationModel<CustomerResponse> {
     }
 
     public Boolean getDeleted() {
-        return isDeleted;
+        return deleted;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        CustomerResponse that = (CustomerResponse) o;
-        return Objects.equals(id, that.id) && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(patronymic, that.patronymic) && Objects.equals(phoneNumber, that.phoneNumber) && Objects.equals(email, that.email) && Objects.equals(registrationDate, that.registrationDate) && Objects.equals(isDeleted, that.isDeleted);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        if (!super.equals(object)) return false;
+        CustomerResponse that = (CustomerResponse) object;
+        return Objects.equals(id, that.id) && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(patronymic, that.patronymic) && Objects.equals(loyaltyPoints, that.loyaltyPoints) && Objects.equals(phoneNumber, that.phoneNumber) && Objects.equals(email, that.email) && Objects.equals(registrationDate, that.registrationDate) && Objects.equals(deleted, that.deleted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, firstName, lastName, patronymic, phoneNumber, email, registrationDate, isDeleted);
+        return Objects.hash(super.hashCode(), id, firstName, lastName, patronymic, loyaltyPoints, phoneNumber, email, registrationDate, deleted);
     }
 }

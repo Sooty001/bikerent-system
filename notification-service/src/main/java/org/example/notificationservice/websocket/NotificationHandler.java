@@ -15,7 +15,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class NotificationHandler extends TextWebSocketHandler {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationHandler.class);
-
     private final CopyOnWriteArrayList<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
     @Override

@@ -2,69 +2,163 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>WebSocket Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Уведомления</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        #messages { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; background: #f9f9f9; }
-        .log { color: gray; font-size: 0.9em; }
-        .msg { color: green; font-weight: bold; }
-        .error { color: red; }
+        :root {
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --text: #171717;
+            --meta: #888888;
+            --border: #e5e5e5;
+            --green: #22c55e;
+            --red: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* Заголовок и статус */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .status {
+            font-size: 13px;
+            color: var(--meta);
+        }
+
+        .status.online { color: var(--green); }
+        .status.offline { color: var(--red); }
+
+        #feed {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .entry {
+            background: var(--surface);
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            animation: fadein 0.3s ease;
+        }
+
+        .entry-time {
+            font-size: 12px;
+            color: var(--meta);
+            margin-bottom: 6px;
+            font-family: monospace;
+        }
+
+        .entry-text {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @keyframes fadein {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .system-msg {
+            text-align: center;
+            font-size: 12px;
+            color: var(--meta);
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
-<h2>Тест уведомлений (Notification Service)</h2>
-<div>
-    Статус: <span id="status" style="color:red">Отключено</span>
+
+<div class="container">
+    <div class="header">
+        <h1>BikeRent Events</h1>
+        <span id="status" class="status offline">● Disconnected</span>
+    </div>
+
+    <div id="feed">
+    </div>
 </div>
-<br>
-<div id="messages"></div>
 
 <script>
-    const messagesDiv = document.getElementById('messages');
-    const statusSpan = document.getElementById('status');
+    const feed = document.getElementById('feed');
+    const statusLabel = document.getElementById('status');
     let socket;
 
     function connect() {
         socket = new WebSocket("ws://localhost:8082/ws/notifications");
 
         socket.onopen = function() {
-            statusSpan.textContent = "Подключено";
-            statusSpan.style.color = "green";
-            log("Соединение установлено!");
+            statusLabel.textContent = "● Connected";
+            statusLabel.className = "status online";
+            logSystem("Соединение установлено");
         };
 
         socket.onmessage = function(event) {
-            addMessage(event.data);
+            addEntry(event.data);
         };
 
         socket.onclose = function(event) {
-            statusSpan.textContent = "Отключено";
-            statusSpan.style.color = "red";
-            log("Соединение закрыто. Код: " + event.code);
+            statusLabel.textContent = "● Disconnected";
+            statusLabel.className = "status offline";
+            logSystem("Соединение разорвано");
         };
 
-        socket.onerror = function(error) {
-            log("Ошибка WebSocket (см. консоль)", true);
+        socket.onerror = function() {
+            console.error("Ошибка WebSocket");
         };
     }
 
-    function log(text, isError = false) {
-        const el = document.createElement('div');
-        el.className = isError ? 'error' : 'log';
-        el.textContent = `[СИСТЕМА] ${text}`;
-        messagesDiv.appendChild(el);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    function addEntry(text) {
+        const div = document.createElement('div');
+        div.className = 'entry';
+
+        const time = new Date().toLocaleTimeString('ru-RU');
+
+        div.innerHTML = `
+            <div class="entry-time">${time}</div>
+            <div class="entry-text">${text}</div>
+        `;
+
+        feed.insertBefore(div, feed.firstChild);
     }
 
-    function addMessage(text) {
-        const el = document.createElement('div');
-        el.className = 'msg';
-        el.textContent = `[УВЕДОМЛЕНИЕ] ${text}`;
-        messagesDiv.appendChild(el);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    function logSystem(text) {
+        const div = document.createElement('div');
+        div.className = 'system-msg';
+        div.textContent = text;
+        feed.insertBefore(div, feed.firstChild);
     }
 
     connect();
 </script>
+
 </body>
 </html>

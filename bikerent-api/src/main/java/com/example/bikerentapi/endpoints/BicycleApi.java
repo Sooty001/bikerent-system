@@ -29,7 +29,7 @@ public interface BicycleApi {
             @Parameter(description = "Фильтр по статусу (available, rented)")
             @RequestParam(required = false) String status,
 
-            @Parameter(description = "Номер страницы (начиная с 0)")
+            @Parameter(description = "Номер страницы")
             @RequestParam(defaultValue = "0") int page,
 
             @Parameter(description = "Размер страницы")

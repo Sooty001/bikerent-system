@@ -42,7 +42,7 @@ public class RabbitMQConfig {
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(messageConverter);
-
+        rabbitTemplate.setObservationEnabled(true);
         rabbitTemplate.setMandatory(true);
 
         rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {

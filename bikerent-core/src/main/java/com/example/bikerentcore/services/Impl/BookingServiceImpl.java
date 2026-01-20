@@ -19,6 +19,8 @@ import com.example.bikerentcore.repositories.RentalRepository;
 import com.example.bikerentcore.services.BookingService;
 import com.example.bikerentcore.services.CustomerService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ import java.util.UUID;
 
 @Service
 public class BookingServiceImpl implements BookingService {
+    private static final Logger log = LoggerFactory.getLogger(BookingServiceImpl.class);
+
     private final RentalRepository rentalRepository;
     private final BookingRepository bookingRepository;
     private final CustomerService customerService;
@@ -73,9 +77,7 @@ public class BookingServiceImpl implements BookingService {
 
         LocalDateTime safeStartTime = request.plannedStartTime().minusMinutes(30);
 
-        boolean rentalConflict = rentalRepository.existsActiveRentalConflict(
-                bicycle.getId(), safeStartTime
-        );
+        boolean rentalConflict = rentalRepository.existsActiveRentalConflict(bicycle.getId(), safeStartTime);
 
         if (bookingConflict || rentalConflict) {
             throw new BookingTimeConflictException(bicycle.getId());
@@ -98,7 +100,7 @@ public class BookingServiceImpl implements BookingService {
                     event
             );
         } catch (Exception e) {
-            System.err.println("Failed to send booking event: " + e.getMessage());
+            log.error("Failed to publish BookingCreatedEvent", e);
         }
 
         return modelMapper.map(saved, BookingResponse.class);

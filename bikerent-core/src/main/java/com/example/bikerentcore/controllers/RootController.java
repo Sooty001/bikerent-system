@@ -21,10 +21,10 @@ public class RootController {
                 linkTo(methodOn(BicycleController.class).getAllBicycles(null, 0, 10)).withRel("bicycles"),
                 linkTo(methodOn(CustomerController.class).getAllCustomers()).withRel("customers"),
                 linkTo(methodOn(BookingController.class).getAllBookings()).withRel("bookings"),
-
                 Link.of("/swagger-ui/index.html").withRel("documentation")
         );
 
         return rootModel;
     }
 }
+

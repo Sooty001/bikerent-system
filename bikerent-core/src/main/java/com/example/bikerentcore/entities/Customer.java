@@ -26,7 +26,7 @@ public class Customer extends BaseEntity {
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.registrationDate = registrationDate;
-        this.deleted = deleted;
+        this.deleted = false;
     }
 
     @Column(name = "first_name", nullable = false)

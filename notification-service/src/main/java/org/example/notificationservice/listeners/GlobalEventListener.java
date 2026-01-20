@@ -15,6 +15,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,81 +29,71 @@ public class GlobalEventListener {
     private static final String DLX = "dlx.bikerent";
     private final Set<String> processedEventIds = ConcurrentHashMap.newKeySet();
 
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
     public GlobalEventListener(NotificationHandler notificationHandler) {
         this.notificationHandler = notificationHandler;
     }
 
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(
-                    name = "notify.customer",
-                    durable = "true",
-                    arguments = {
-                            @Argument(name = "x-dead-letter-exchange", value = DLX),
-                            @Argument(name = "x-dead-letter-routing-key", value = "error.customer.registered")
-                    }
-            ),
+            value = @Queue(name = "notify.customer", durable = "true", arguments = {@Argument(name = "x-dead-letter-exchange", value = DLX)}),
             exchange = @Exchange(name = "bikerent.topic", type = "topic"),
             key = "customer.registered"
     ))
     public void onCustomerRegistered(@Payload CustomerRegisteredEvent event, Channel ch, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         if (!processedEventIds.add(event.customerId())) {
-            log.warn("Duplicate event CustomerRegisteredEvent: {}. Skip it.", event.customerId());
             ch.basicAck(tag, false);
             return;
         }
-        sendNotification("Новый клиент: " + event.fullName(), ch, tag);
+        String msg = String.format("НОВЫЙ КЛИЕНТ: %s (%s) | Loyalty: %d",
+                event.fullName(), event.email(), event.initialLoyaltyPoints());
+
+        sendNotification(msg, ch, tag);
     }
 
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(
-                    name = "notify.booking",
-                    durable = "true",
-                    arguments = {
-                            @Argument(name = "x-dead-letter-exchange", value = DLX),
-                            @Argument(name = "x-dead-letter-routing-key", value = "error.notify.booking")
-                    }
-            ),
+            value = @Queue(name = "notify.booking", durable = "true", arguments = {@Argument(name = "x-dead-letter-exchange", value = DLX)}),
             exchange = @Exchange(name = "bikerent.topic", type = "topic"),
             key = "booking.created"
     ))
     public void onBookingCreated(@Payload BookingCreatedEvent event, Channel ch, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         if (!processedEventIds.add(event.bookingId())) {
-            log.warn("Duplicate event BookingCreatedEvent: {}.  Skip it.", event.bookingId());
             ch.basicAck(tag, false);
             return;
         }
-        sendNotification("Бронь создана: " + event.bicycleId(), ch, tag);
+
+        String timeStr = "";
+        try {
+            timeStr = LocalDateTime.parse(event.plannedStartTime()).format(formatter);
+        } catch (Exception e) { timeStr = event.plannedStartTime(); }
+
+        String msg = String.format("БРОНЬ: Велосипед %s зарезервирован на %s. Клиент: %s",
+                shortId(event.bicycleId()), timeStr, shortId(event.customerId()));
+
+        sendNotification(msg, ch, tag);
     }
 
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(
-                    name = "notify.rental.start",
-                    durable = "true",
-                    arguments = {
-                            @Argument(name = "x-dead-letter-exchange", value = DLX),
-                            @Argument(name = "x-dead-letter-routing-key", value = "error.notify.rental.start")
-                    }
-            ),
+            value = @Queue(name = "notify.rental.start", durable = "true", arguments = {@Argument(name = "x-dead-letter-exchange", value = DLX)}),
             exchange = @Exchange(name = "bikerent.topic", type = "topic"),
             key = "rental.started"
     ))
     public void onRentalStarted(@Payload RentalStartedEvent event, Channel ch, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
-        sendNotification("Поездка началась!", ch, tag);
+        String msg = String.format("ПОЕЗДКА НАЧАЛАСЬ: Клиент %s забрал велосипед %s",
+                shortId(event.customerId()), shortId(event.bicycleId()));
+
+        sendNotification(msg, ch, tag);
     }
 
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(
-                    name = "notify.financial",
-                    durable = "true",
-                    arguments = {
-                            @Argument(name = "x-dead-letter-exchange", value = DLX),
-                            @Argument(name = "x-dead-letter-routing-key", value = "error.notify.financial")
-                    }
-            ),
+            value = @Queue(name = "notify.financial", durable = "true", arguments = {@Argument(name = "x-dead-letter-exchange", value = DLX)}),
             exchange = @Exchange(name = "bikerent.financial", type = "fanout")
     ))
     public void onRentalEnded(@Payload RentalEndedEvent event, Channel ch, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
-        sendNotification(String.format("Пользователь: %s, Оплата: %.2f руб.", event.customerId(), event.finalPrice()), ch, tag);
+        String msg = String.format("ОПЛАТА ПОЛУЧЕНА: %.2f %s. Велосипед %s возвращен.",
+                event.finalPrice(), event.currency(), shortId(event.bicycleId()));
+
+        sendNotification(msg, ch, tag);
     }
 
     private void sendNotification(String message, Channel channel, long tag) throws IOException {
@@ -109,8 +101,15 @@ public class GlobalEventListener {
             notificationHandler.broadcast(message);
             channel.basicAck(tag, false);
         } catch (Exception e) {
-            log.error("Failed to send notification. Sending to DLQ", e);
+            log.error("Failed to send notification", e);
             channel.basicNack(tag, false, false);
         }
+    }
+
+    private String shortId(String uuid) {
+        if (uuid != null && uuid.length() > 8) {
+            return uuid.substring(0, 8) + "..";
+        }
+        return uuid;
     }
 }

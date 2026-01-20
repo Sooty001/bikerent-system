@@ -40,6 +40,7 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = modelMapper.map(request, Customer.class);
         customer.setRegistrationDate(LocalDateTime.now());
         customer.setLoyaltyPoints(0);
+        customer.setDeleted(false);
 
         Customer saved = customerRepository.save(customer);
 
