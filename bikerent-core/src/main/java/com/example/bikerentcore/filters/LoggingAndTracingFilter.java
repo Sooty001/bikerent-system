@@ -43,7 +43,6 @@ public class LoggingAndTracingFilter implements Filter {
                 log.info("Request started: {} {}", request.getMethod(), request.getRequestURI());
             }
 
-
             filterChain.doFilter(request, response);
 
         } finally {

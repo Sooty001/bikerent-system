@@ -51,7 +51,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional
     public BookingResponse createBooking(BookingRequest request) {
         if (!request.plannedReturnTime().isAfter(request.plannedStartTime())) {
             throw new InvalidBookingTimeRangeException("Rental end time must be after start time");
@@ -94,13 +93,9 @@ public class BookingServiceImpl implements BookingService {
                     saved.getPlannedStartTime().toString()
             );
 
-            rabbitTemplate.convertAndSend(
-                    RabbitMQConfig.TOPIC_EXCHANGE,
-                    RabbitMQConfig.KEY_BOOKING_CREATED,
-                    event
-            );
+            rabbitTemplate.convertAndSend(RabbitMQConfig.TOPIC_EXCHANGE, RabbitMQConfig.KEY_BOOKING_CREATED, event);
         } catch (Exception e) {
-            log.error("Failed to publish BookingCreatedEvent", e);
+            log.error("Failed publish BookingCreatedEvent", e);
         }
 
         return modelMapper.map(saved, BookingResponse.class);

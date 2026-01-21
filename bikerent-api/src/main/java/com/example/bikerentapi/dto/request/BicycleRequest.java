@@ -11,6 +11,7 @@ public record BicycleRequest(
         @NotBlank(message = "Тип не может быть пустым")
         String type,
 
+        @NotBlank(message = "Размер не может быть пустым")
         String size,
 
         @NotNull(message = "Стоимость за час не может быть пустой")

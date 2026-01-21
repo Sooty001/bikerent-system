@@ -4,6 +4,8 @@ import com.example.bikerentapi.exception.ExternalServiceException;
 import com.example.grpc.pricing.CalculatePriceRequest;
 import com.example.grpc.pricing.CalculatePriceResponse;
 import com.example.grpc.pricing.PricingServiceGrpc;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +41,13 @@ public class PricingGrpcClient {
 
             return response.getFinalPrice();
 
-        } catch (Exception e) {
-            throw new ExternalServiceException("Pricing Service", "Could not calculate price at the moment");
+        } catch (StatusRuntimeException e) {
+            String serverMessage = e.getStatus().getDescription();
+            if (e.getStatus().getCode() == Status.Code.INVALID_ARGUMENT) {
+                throw new IllegalArgumentException(serverMessage);
+            } else {
+                throw new ExternalServiceException("Pricing Service", serverMessage);
+            }
         }
     }
 }
